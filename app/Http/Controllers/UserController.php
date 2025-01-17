@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use JetBrains\PhpStorm\NoReturn;
 use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -100,7 +99,7 @@ class UserController extends Controller
     /**
      * Logout the authenticated user and revoke all their tokens.
      */
-    public function logout(Request $request): JsonResponse
+    public function logout(): JsonResponse
     {
         /** @var PersonalAccessToken $token */
         $token = auth()->user()->currentAccessToken();
