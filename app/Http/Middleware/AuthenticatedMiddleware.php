@@ -13,7 +13,7 @@ class AuthenticatedMiddleware
     {
         if (auth('sanctum')->check()) {
             return response()->json([
-                'error' => 'You are already logged in.'
+                'error' => 'You are already logged in'
             ], HttpResponse::HTTP_UNAUTHORIZED);
         }
 

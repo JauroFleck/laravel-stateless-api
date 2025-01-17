@@ -109,6 +109,19 @@ class UserController extends Controller
             'message' => 'Logged out successfully',
         ], HttpResponse::HTTP_OK);
     }
+
+
+    /**
+     * Logout the authenticated user from all devices by revoking all their tokens.
+     */
+    public function logoutFromAllDevices(): JsonResponse
+    {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out from all devices successfully',
+        ], HttpResponse::HTTP_OK);
+    }
 }
 
 

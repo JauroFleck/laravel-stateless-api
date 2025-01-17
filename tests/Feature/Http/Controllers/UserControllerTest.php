@@ -14,6 +14,8 @@ class UserControllerTest extends TestCase
 
     public function test_can_list_users()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         User::factory()->count(15)->create();
 
         $response = $this->getJson(route('users.index'));
@@ -29,6 +31,8 @@ class UserControllerTest extends TestCase
 
     public function test_can_store_a_new_user()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $data = [
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
@@ -49,6 +53,8 @@ class UserControllerTest extends TestCase
 
     public function test_can_show_a_single_user()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $user = User::factory()->create();
 
         $response = $this->getJson(route('users.show', $user));
@@ -61,6 +67,8 @@ class UserControllerTest extends TestCase
 
     public function test_can_update_a_user()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $user = User::factory()->create();
 
         $data = [
@@ -81,6 +89,8 @@ class UserControllerTest extends TestCase
 
     public function test_can_delete_a_user()
     {
+        Sanctum::actingAs(User::factory()->create());
+
         $user = User::factory()->create();
 
         $response = $this->deleteJson(route('users.destroy', $user));
@@ -126,6 +136,47 @@ class UserControllerTest extends TestCase
         $response->assertOk()
             ->assertJsonFragment([
                 'message' => 'Logged out successfully',
+            ]);
+    }
+
+    public function test_can_logout_from_all_devices()
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        // Simulate multiple device tokens for the user
+        $user->tokens()->create(['name' => 'Device 1', 'token' => Hash::make('token1')]);
+        $user->tokens()->create(['name' => 'Device 2', 'token' => Hash::make('token2')]);
+
+        $response = $this->postJson(route('users.logoutAll'));
+
+        $response->assertOk()
+            ->assertJsonFragment([
+                'message' => 'Logged out from all devices successfully',
+            ]);
+
+        $this->assertCount(0, $user->tokens);
+    }
+
+    public function test_cannot_access_login_route_when_already_logged_in()
+    {
+        $user = User::factory()->create();
+
+        // Act as an authenticated user
+        Sanctum::actingAs($user);
+
+        $data = [
+            'email' => $user->email,
+            'password' => 'password123',
+            'device_name' => 'Test Device',
+        ];
+
+        $response = $this->postJson(route('users.login'), $data);
+
+        $response->assertUnauthorized()
+            ->assertJsonFragment([
+                'error' => 'You are already logged in'
             ]);
     }
 }
