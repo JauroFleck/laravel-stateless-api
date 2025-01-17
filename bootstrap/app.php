@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,13 +15,19 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+        $exceptions->render(function (NotFoundHttpException $e) {
             return response()->json([
                 'error' => $e->getMessage(),
             ], \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND);
         });
 
-        $exceptions->render(function (Throwable $e, Request $request) {
+        $exceptions->render(function (AuthenticationException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
+        });
+
+        $exceptions->render(function (Throwable $e) {
             return response()->json([
                 'error' => $e->getMessage(),
             ], \Symfony\Component\HttpFoundation\Response::HTTP_INTERNAL_SERVER_ERROR);

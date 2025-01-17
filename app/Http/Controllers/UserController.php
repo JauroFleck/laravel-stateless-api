@@ -10,6 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use JetBrains\PhpStorm\NoReturn;
+use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class UserController extends Controller
@@ -64,4 +67,49 @@ class UserController extends Controller
         $user->delete();
         return response(status: HttpResponse::HTTP_NO_CONTENT);
     }
+
+
+    /**
+     * Login a user and issue a Sanctum token.
+     */
+    public function login(Request $request): JsonResponse
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|max:255',
+            'device_name' => 'nullable|string|max:255',
+        ]);
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!Hash::check($credentials['password'], $user->password)) {
+            return response()->json([
+                'message' => 'The provided credentials are incorrect.',
+            ], HttpResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $token = $user->createToken($request->device_name ?? 'auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'device_name' => $request->device_name,
+            'user' => new UserResource($user),
+        ], HttpResponse::HTTP_OK);
+    }
+
+    /**
+     * Logout the authenticated user and revoke all their tokens.
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        /** @var PersonalAccessToken $token */
+        $token = auth()->user()->currentAccessToken();
+        $token->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully',
+        ], HttpResponse::HTTP_OK);
+    }
 }
+
+
