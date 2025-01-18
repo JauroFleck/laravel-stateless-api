@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-class AuthenticatedMiddleware
+class DenyAuthenticatedMiddleware
 {
     public function handle(Request $request, Closure $next): JsonResponse
     {

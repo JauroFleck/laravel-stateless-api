@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use App\Http\Middleware\AuthenticatedMiddleware;
+use App\Http\Middleware\DenyAuthenticatedMiddleware;
+use App\Http\Middleware\DenyUnauthenticatedMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
 
     Route::apiResource('users', UserController::class);
     Route::name('users.')->prefix('users')->group(function () {
@@ -14,7 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::middleware(AuthenticatedMiddleware::class)->group(function () {
+Route::middleware(DenyAuthenticatedMiddleware::class)->group(function () {
 
     Route::post('users/login', [UserController::class, 'login'])->name('users.login');
 
