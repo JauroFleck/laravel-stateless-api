@@ -26,9 +26,10 @@ class UserControllerTest extends TestCase
                 'links',
                 'meta',
             ])
-            ->assertJsonCount(10, 'data'); // Por padrão, a paginação exibe 10 por página.
+            ->assertJsonCount(10, 'data');
     }
 
+    // Refactor
     public function test_can_store_a_new_user()
     {
         Sanctum::actingAs(User::factory()->create());
@@ -51,6 +52,7 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    // Refactor
     public function test_can_show_a_single_user()
     {
         Sanctum::actingAs(User::factory()->create());
@@ -65,6 +67,7 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    // Refactor
     public function test_can_update_a_user()
     {
         Sanctum::actingAs(User::factory()->create());
@@ -87,6 +90,7 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    // Refactor
     public function test_can_delete_a_user()
     {
         Sanctum::actingAs(User::factory()->create());
@@ -101,6 +105,7 @@ class UserControllerTest extends TestCase
         ]);
     }
 
+    // Refactor
     public function test_can_login_a_user()
     {
         $password = 'password123';
@@ -125,6 +130,7 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    // Revise
     public function test_can_logout_a_user()
     {
         $user = User::factory()->create();
@@ -139,6 +145,7 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+    // Revise
     public function test_can_logout_from_all_devices()
     {
         $user = User::factory()->create();
@@ -159,6 +166,7 @@ class UserControllerTest extends TestCase
         $this->assertCount(0, $user->tokens);
     }
 
+    // Revise
     public function test_cannot_access_login_route_when_already_logged_in()
     {
         $user = User::factory()->create();

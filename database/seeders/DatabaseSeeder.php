@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\User\UserProfiles;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach (UserProfiles::cases() as $profile) {
+            User::factory()->create([
+                'profile' => $profile,
+                'name' => $profile->name,
+                'email' => lcfirst($profile->name) . '@example.com',
+                'password' => bcrypt('password'),
+            ]);
+        }
     }
 }

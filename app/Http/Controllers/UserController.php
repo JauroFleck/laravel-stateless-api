@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\User\UserProfiles;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
@@ -67,7 +68,6 @@ class UserController extends Controller
         return response(status: HttpResponse::HTTP_NO_CONTENT);
     }
 
-
     /**
      * Login a user and issue a Sanctum token.
      */
@@ -79,7 +79,8 @@ class UserController extends Controller
             'device_name' => 'nullable|string|max:255',
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])
+            ->where('profile', UserProfiles::Patient)->first();
 
         if (!Hash::check($credentials['password'], $user->password)) {
             return response()->json([
