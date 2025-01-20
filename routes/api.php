@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\DenyAuthenticatedMiddleware;
@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
 
-    Route::middleware(AdminMiddleware::class)->group(function () {
-        Route::apiResource('users', UserController::class);
-    });
 
     Route::name('users.')->prefix('users')->group(function () {
         Route::post('logout', [UserController::class, 'logout'])->name('logout');
         Route::post('logout-all', [UserController::class, 'logoutFromAllDevices'])->name('logoutAll');
+        Route::get('devices', [UserController::class, 'devices'])->name('devices');
+    });
+
+    Route::middleware(AdminMiddleware::class)->group(function () {
+        Route::apiResource('users', UserController::class);
     });
 
 });

@@ -1,1 +1,1 @@
-Pure API Laravel System
+Pure Stateless API Laravel System

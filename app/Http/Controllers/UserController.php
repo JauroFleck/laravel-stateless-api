@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\User\UserProfiles;
+use App\Http\Resources\User\TokenResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
@@ -11,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -76,7 +78,7 @@ class UserController extends Controller
         $credentials = $request->validate([
             'email' => 'required|email|exists:users,email',
             'password' => 'required|string|max:255',
-            'device_name' => 'nullable|string|max:255',
+            'device_name' => 'required|string|max:255',
         ]);
 
         $user = User::where('email', $credentials['email'])
@@ -88,7 +90,7 @@ class UserController extends Controller
             ], HttpResponse::HTTP_UNAUTHORIZED);
         }
 
-        $token = $user->createToken($request->device_name ?? 'auth_token')->plainTextToken;
+        $token = $user->createToken($request->device_name)->plainTextToken;
 
         return response()->json([
             'token' => $token,
@@ -103,7 +105,7 @@ class UserController extends Controller
     public function logout(): JsonResponse
     {
         /** @var PersonalAccessToken $token */
-        $token = auth()->user()->currentAccessToken();
+        $token = auth('sanctum')->user()->currentAccessToken();
         $token->delete();
 
         return response()->json([
@@ -117,11 +119,17 @@ class UserController extends Controller
      */
     public function logoutFromAllDevices(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
+        auth('sanctum')->user()->tokens()->delete();
 
         return response()->json([
             'message' => 'Logged out from all devices successfully',
         ], HttpResponse::HTTP_OK);
+    }
+
+    public function devices(): AnonymousResourceCollection
+    {
+        $tokens = auth('sanctum')->user()->tokens;
+        return TokenResource::collection($tokens);
     }
 }
 
