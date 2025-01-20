@@ -24,6 +24,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string $email
  * @property Carbon|null $email_verified_at
  * @property string $password
+ * @property UserProfiles $profile
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -41,6 +42,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfile($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @mixin Eloquent
@@ -59,6 +61,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile',
     ];
 
     /**

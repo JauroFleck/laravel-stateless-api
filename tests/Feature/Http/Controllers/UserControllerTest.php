@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Enums\User\UserProfiles;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +15,7 @@ class UserControllerTest extends TestCase
 
     public function test_can_list_users()
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['profile' => UserProfiles::Admin]));
 
         User::factory()->count(15)->create();
 
@@ -29,14 +30,14 @@ class UserControllerTest extends TestCase
             ->assertJsonCount(10, 'data');
     }
 
-    // Refactor
     public function test_can_store_a_new_user()
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['profile' => UserProfiles::Admin]));
 
         $data = [
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
+            'profile' => UserProfiles::Patient->name,
             'password' => 'password123',
             'password_confirmation' => 'password123'
         ];
@@ -52,10 +53,9 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    // Refactor
     public function test_can_show_a_single_user()
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['profile' => UserProfiles::Admin]));
 
         $user = User::factory()->create();
 
@@ -67,16 +67,15 @@ class UserControllerTest extends TestCase
             ]);
     }
 
-    // Refactor
     public function test_can_update_a_user()
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['profile' => UserProfiles::Admin]));
 
         $user = User::factory()->create();
 
         $data = [
             'name' => 'Updated Name',
-            'email' => $user->email, // O email permanece o mesmo.
+            'email' => $user->email,
         ];
 
         $response = $this->putJson(route('users.update', $user), $data);
@@ -90,10 +89,9 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    // Refactor
     public function test_can_delete_a_user()
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs(User::factory()->create(['profile' => UserProfiles::Admin]));
 
         $user = User::factory()->create();
 
@@ -105,13 +103,13 @@ class UserControllerTest extends TestCase
         ]);
     }
 
-    // Refactor
     public function test_can_login_a_user()
     {
         $password = 'password123';
         $user = User::factory()->create([
             'email' => 'testuser@example.com',
             'password' => Hash::make($password),
+            'profile' => UserProfiles::Patient,
         ]);
 
         $data = [
@@ -130,10 +128,9 @@ class UserControllerTest extends TestCase
             ]);
     }
 
-    // Revise
     public function test_can_logout_a_user()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
 
         Sanctum::actingAs($user);
 
@@ -145,10 +142,9 @@ class UserControllerTest extends TestCase
             ]);
     }
 
-    // Revise
     public function test_can_logout_from_all_devices()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
 
         Sanctum::actingAs($user);
 
@@ -166,10 +162,9 @@ class UserControllerTest extends TestCase
         $this->assertCount(0, $user->tokens);
     }
 
-    // Revise
     public function test_cannot_access_login_route_when_already_logged_in()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
 
         // Act as an authenticated user
         Sanctum::actingAs($user);
