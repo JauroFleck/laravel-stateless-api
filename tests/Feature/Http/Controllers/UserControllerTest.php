@@ -182,4 +182,53 @@ class UserControllerTest extends TestCase
                 'error' => 'You are already logged in'
             ]);
     }
+
+
+    public function test_can_get_user_devices()
+    {
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
+
+        Sanctum::actingAs($user);
+
+        // Simulate multiple device tokens
+        $device1 = $user->tokens()->create(['name' => 'Device 1', 'token' => Hash::make('token1')]);
+        $device2 = $user->tokens()->create(['name' => 'Device 2', 'token' => Hash::make('token2')]);
+
+        $response = $this->getJson(route('users.devices'));
+
+        $response->assertOk()
+            ->assertJsonFragment([
+                'name' => $device1->name,
+            ])
+            ->assertJsonFragment([
+                'name' => $device2->name,
+            ]);
+    }
+
+    public function test_can_logout_from_a_specific_device()
+    {
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
+
+        Sanctum::actingAs($user);
+
+        // Simulate multiple device tokens
+        $device1 = $user->tokens()->create(['name' => 'Device 1', 'token' => Hash::make('token1')]);
+        $device2 = $user->tokens()->create(['name' => 'Device 2', 'token' => Hash::make('token2')]);
+
+        $response = $this->postJson(route('users.logoutFromDevice', ['device_id' => $device1->id]));
+
+        $response->assertOk()
+            ->assertJsonFragment([
+                'message' => 'Logged out from device successfully',
+            ]);
+
+        // Ensure only the first device token is deleted
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'id' => $device1->id,
+        ]);
+
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'id' => $device2->id,
+        ]);
+    }
 }

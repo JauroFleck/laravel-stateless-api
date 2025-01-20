@@ -11,8 +11,6 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -126,10 +124,36 @@ class UserController extends Controller
         ], HttpResponse::HTTP_OK);
     }
 
+    /**
+     * @return AnonymousResourceCollection
+     */
     public function devices(): AnonymousResourceCollection
     {
         $tokens = auth('sanctum')->user()->tokens;
         return TokenResource::collection($tokens);
+    }
+
+    /**
+     * @param int $device_id
+     * @return JsonResponse
+     */
+    public function logoutFromDevice(int $device_id): JsonResponse
+    {
+        $token = auth('sanctum')->user()->tokens()->where('id', $device_id)->first();
+
+        if (!$token) {
+            return response()->json([
+                'error' => 'Device not found.',
+            ], HttpResponse::HTTP_NOT_FOUND);
+        }
+
+        $device_name = $token->name;
+        $token->delete();
+
+        return response()->json([
+            'message' => 'Logged out from device successfully',
+            'device' => $device_name,
+        ], HttpResponse::HTTP_OK);
     }
 }
 

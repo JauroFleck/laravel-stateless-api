@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
 
-
     Route::name('users.')->prefix('users')->group(function () {
         Route::post('logout', [UserController::class, 'logout'])->name('logout');
         Route::post('logout-all', [UserController::class, 'logoutFromAllDevices'])->name('logoutAll');
+        Route::post('logout-from-device/{device_id}', [UserController::class, 'logoutFromDevice'])->name('logoutFromDevice');
         Route::get('devices', [UserController::class, 'devices'])->name('devices');
     });
 
