@@ -25,6 +25,11 @@ Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
 Route::middleware(DenyAuthenticatedMiddleware::class)->group(function () {
 
     Route::post('admin/login', [AdminController::class, 'login'])->name('admin.login');
-    Route::post('users/login', [UserController::class, 'login'])->name('users.login');
+
+    Route::name('users.')->prefix('users')->group(function () {
+        Route::post('login', [UserController::class, 'login'])->name('login');
+        Route::post('send-reset-token', [UserController::class, 'sendResetToken'])->name('sendResetToken');
+        Route::post('reset-password', [UserController::class, 'resetPassword'])->name('resetPassword');
+    });
 
 });

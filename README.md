@@ -12,3 +12,8 @@
 - Resource based responses
 - Rich request validation
 - Robust automated tests
+
+### Next steps:
+
+- Verify e-mail
+- Password recovery
