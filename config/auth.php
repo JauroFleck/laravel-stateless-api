@@ -3,10 +3,16 @@
 return [
 
     'defaults' => [
+        'guard' => 'sanctum',
         'passwords' => 'users',
     ],
 
-    'guards' => [],
+    'guards' => [
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ]
+    ],
 
     'providers' => [
         'users' => [

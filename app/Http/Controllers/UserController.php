@@ -74,7 +74,7 @@ class UserController extends Controller
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'password' => 'required|string|max:255',
             'device_name' => 'required|string|max:255',
         ]);
@@ -82,9 +82,9 @@ class UserController extends Controller
         $user = User::where('email', $credentials['email'])
             ->where('profile', UserProfiles::Patient)->first();
 
-        if (!Hash::check($credentials['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json([
-                'message' => 'The provided credentials are incorrect.',
+                'error' => 'Invalid credentials',
             ], HttpResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -103,7 +103,7 @@ class UserController extends Controller
     public function logout(): JsonResponse
     {
         /** @var PersonalAccessToken $token */
-        $token = auth('sanctum')->user()->currentAccessToken();
+        $token = auth()->user()->currentAccessToken();
         $token->delete();
 
         return response()->json([
@@ -117,7 +117,7 @@ class UserController extends Controller
      */
     public function logoutFromAllDevices(): JsonResponse
     {
-        auth('sanctum')->user()->tokens()->delete();
+        auth()->user()->tokens()->delete();
 
         return response()->json([
             'message' => 'Logged out from all devices successfully',
@@ -129,7 +129,7 @@ class UserController extends Controller
      */
     public function devices(): AnonymousResourceCollection
     {
-        $tokens = auth('sanctum')->user()->tokens;
+        $tokens = auth()->user()->tokens;
         return TokenResource::collection($tokens);
     }
 
@@ -139,7 +139,7 @@ class UserController extends Controller
      */
     public function logoutFromDevice(int $device_id): JsonResponse
     {
-        $token = auth('sanctum')->user()->tokens()->where('id', $device_id)->first();
+        $token = auth()->user()->tokens()->where('id', $device_id)->first();
 
         if (!$token) {
             return response()->json([

@@ -7,29 +7,33 @@ use App\Http\Middleware\DenyAuthenticatedMiddleware;
 use App\Http\Middleware\DenyUnauthenticatedMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
+Route::middleware('throttle:60,1,api')->group(function () {
+    Route::middleware(DenyUnauthenticatedMiddleware::class)->group(function () {
 
-    Route::name('users.')->prefix('users')->group(function () {
-        Route::post('logout', [UserController::class, 'logout'])->name('logout');
-        Route::post('logout-all', [UserController::class, 'logoutFromAllDevices'])->name('logoutAll');
-        Route::post('logout-from-device/{device_id}', [UserController::class, 'logoutFromDevice'])->name('logoutFromDevice');
-        Route::get('devices', [UserController::class, 'devices'])->name('devices');
+        Route::name('users.')->prefix('users')->group(function () {
+            Route::post('logout', [UserController::class, 'logout'])->name('logout');
+            Route::post('logout-all', [UserController::class, 'logoutFromAllDevices'])->name('logoutAll');
+            Route::post('logout-from-device/{device_id}', [UserController::class, 'logoutFromDevice'])->name('logoutFromDevice');
+            Route::get('devices', [UserController::class, 'devices'])->name('devices');
+        });
+
+        Route::middleware(AdminMiddleware::class)->group(function () {
+            Route::apiResource('users', UserController::class);
+        });
+
     });
 
-    Route::middleware(AdminMiddleware::class)->group(function () {
-        Route::apiResource('users', UserController::class);
-    });
+    Route::middleware(DenyAuthenticatedMiddleware::class)->group(function () {
 
+        Route::post('admin/login', [AdminController::class, 'login'])->middleware('throttle:5,5,admin_login')->name('admin.login');
+
+        Route::name('users.')->prefix('users')->group(function () {
+            Route::post('login', [UserController::class, 'login'])->middleware('throttle:10,1,user_login')->name('login');
+            Route::post('send-reset-token', [UserController::class, 'sendResetToken'])->name('sendResetToken');
+            Route::post('reset-password', [UserController::class, 'resetPassword'])->name('resetPassword');
+        });
+
+    });
 });
 
-Route::middleware(DenyAuthenticatedMiddleware::class)->group(function () {
 
-    Route::post('admin/login', [AdminController::class, 'login'])->name('admin.login');
-
-    Route::name('users.')->prefix('users')->group(function () {
-        Route::post('login', [UserController::class, 'login'])->name('login');
-        Route::post('send-reset-token', [UserController::class, 'sendResetToken'])->name('sendResetToken');
-        Route::post('reset-password', [UserController::class, 'resetPassword'])->name('resetPassword');
-    });
-
-});

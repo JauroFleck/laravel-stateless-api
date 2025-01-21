@@ -11,7 +11,7 @@ class DenyAuthenticatedMiddleware
 {
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if (auth('sanctum')->check()) {
+        if (auth()->check()) {
             return response()->json([
                 'error' => 'You are already logged in'
             ], HttpResponse::HTTP_UNAUTHORIZED);

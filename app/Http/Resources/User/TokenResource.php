@@ -28,7 +28,7 @@ class TokenResource extends JsonResource
             'id' => $this->resource->id,
             'name' => $this->resource->name,
             'last_used_at' => $this->resource->last_used_at,
-            'current' => auth('sanctum')?->user()?->currentAccessToken()->id === $this->resource->id,
+            'current' => auth()?->user()?->currentAccessToken()->id === $this->resource->id,
         ];
     }
 }

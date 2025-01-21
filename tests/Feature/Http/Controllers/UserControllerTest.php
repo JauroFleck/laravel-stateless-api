@@ -128,6 +128,23 @@ class UserControllerTest extends TestCase
             ]);
     }
 
+
+    public function test_cannot_login_with_wrong_credentials()
+    {
+        $data = [
+            'email' => 'user@example.com',
+            'password' => 'wrong_password',
+            'device_name' => 'Test Device',
+        ];
+
+        $response = $this->postJson(route('users.login'), $data);
+
+        $response->assertUnauthorized()
+            ->assertJsonFragment([
+                'error' => 'Invalid credentials',
+            ]);
+    }
+
     public function test_can_logout_a_user()
     {
         $user = User::factory()->create(['profile' => UserProfiles::Patient]);

@@ -1,6 +1,6 @@
 # My Laravel API
 
-> Pure stateless API Laravel
+> Pure stateless Laravel API
 
 ### Features:
 
@@ -12,6 +12,9 @@
 - Resource based responses
 - Rich request validation
 - Robust automated tests
+- System configurations
+- General throttle system
+- Login throttle
 
 ### Next steps:
 

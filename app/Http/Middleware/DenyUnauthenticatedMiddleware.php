@@ -14,8 +14,8 @@ class DenyUnauthenticatedMiddleware
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if (!auth('sanctum')->check()) {
-            throw new AuthenticationException('Unauthenticated', ['sanctum']);
+        if (!auth()->check()) {
+            throw new AuthenticationException('Unauthenticated');
         }
 
         return $next($request);

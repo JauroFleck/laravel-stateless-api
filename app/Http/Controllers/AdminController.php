@@ -20,9 +20,9 @@ class AdminController extends Controller
         $admin = User::where('email', $request->email)
             ->where('profile', UserProfiles::Admin)->first();
 
-        if (!Hash::check($admin->password, $request->password)) {
+        if (!$admin || !Hash::check($admin->password, $request->password)) {
             return response()->json([
-                'message' => 'Invalid credentials'
+                'error' => 'Invalid credentials'
             ], HttpResponse::HTTP_UNAUTHORIZED);
         }
 
