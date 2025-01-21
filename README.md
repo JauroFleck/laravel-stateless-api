@@ -15,8 +15,10 @@
 - System configurations
 - General throttle system
 - Login throttle
+- E-mail verification
+- Password recovery
 
 ### Next steps:
 
-- Verify e-mail
-- Password recovery
+- Tests for e-mail verification
+- Tests for password recovery

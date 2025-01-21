@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\User\UserProfiles;
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-class AdminController extends Controller
+class AdminAuthController extends Controller
 {
     public function login(Request $request) {
         $request->validate([

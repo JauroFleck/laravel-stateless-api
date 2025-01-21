@@ -3,11 +3,11 @@
 namespace Tests\Feature\Http\Middlewares;
 
 use App\Enums\User\UserProfiles;
-use App\Models\User;
+use App\Models\User\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Tests\TestCase;
 
 class ThrottleTest extends TestCase
 {
