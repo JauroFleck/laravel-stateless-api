@@ -17,8 +17,9 @@
 - Login throttle
 - E-mail verification
 - Password recovery
+- Tests for e-mail verification
+- Tests for password recovery
 
 ### Next steps:
 
-- Tests for e-mail verification
-- Tests for password recovery
+- ?
