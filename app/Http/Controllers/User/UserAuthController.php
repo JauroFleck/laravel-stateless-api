@@ -11,15 +11,12 @@ use App\Mail\SendResetToken;
 use App\Models\User\EmailVerificationToken;
 use App\Models\User\PasswordResetToken;
 use App\Models\User\User;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -121,7 +118,8 @@ class UserAuthController extends Controller
     }
 
     /**
-     * @return void
+     * @param Request $request
+     * @return JsonResponse
      */
     public function sendResetToken(Request $request): JsonResponse
     {
@@ -142,6 +140,10 @@ class UserAuthController extends Controller
         return response()->json([ 'message' => 'Submitted' ], HttpResponse::HTTP_OK);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function resetPassword(Request $request): JsonResponse
     {
         $request->validate([

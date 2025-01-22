@@ -52,4 +52,31 @@ class ThrottleTest extends TestCase
         $response = $this->postJson(route('admin.login'), $data);
         $response->assertStatus(HttpResponse::HTTP_TOO_MANY_REQUESTS);
     }
+
+    public function test_send_email_verification_throttle()
+    {
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
+        Sanctum::actingAs($user);
+        for ($i = 0; $i < 2; $i++) {
+            $response = $this->postJson(route('users.sendEmailVerification'));
+            $response->assertStatus(HttpResponse::HTTP_OK);
+        }
+        $response = $this->postJson(route('users.sendEmailVerification'));
+        $response->assertStatus(HttpResponse::HTTP_TOO_MANY_REQUESTS);
+    }
+
+    public function test_send_reset_password_throttle()
+    {
+        $user = User::factory()->create(['profile' => UserProfiles::Patient]);
+
+        $data = [
+            'email' => $user->email,
+        ];
+
+        $response = $this->postJson(route('users.sendResetToken'), $data);
+        $response->assertStatus(HttpResponse::HTTP_OK);
+
+        $response = $this->postJson(route('users.sendResetToken'), $data);
+        $response->assertStatus(HttpResponse::HTTP_TOO_MANY_REQUESTS);
+    }
 }

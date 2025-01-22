@@ -18,7 +18,7 @@ Route::middleware('throttle:60,1,api')->group(function () {
             Route::get('devices', [UserAuthController::class, 'devices'])->name('devices');
             Route::get('me', [UserAuthController::class, 'me'])->name('me');
             Route::post('send-email-verification', [UserAuthController::class, 'sendEmailVerification'])
-                ->middleware('throttle:1,1,email_verification')->name('sendEmailVerification');
+                ->middleware('throttle:2,1,email_verification')->name('sendEmailVerification');
             Route::post('verify-email', [UserAuthController::class, 'verifyEmail'])->name('verifyEmail');
         });
 
